@@ -27,7 +27,8 @@ def parse(raw_file, delimiter):
     return parsed_data,fields
 
 def visualize_days():
-    """Visualize data by the day of the week"""
+    """Visualize data by the day of the week. That is by plotting a graph of
+        frequency of incidents per day(y-axis) against the days of the week(x-axis)"""
     #parsed data that we parsed earlier
     data_file=parse(MY_FILE, ",")[0]
     #make a new variable, 'counter' from iterating through each line of data in
