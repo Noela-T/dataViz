@@ -15,4 +15,6 @@ WHAT WORKS
 
 WHAT DOES NOT WORK
 
--produce a geoJSON file for mapping
+-Menu containing what the application does
+-Produce a geoJSON file for mapping
+
