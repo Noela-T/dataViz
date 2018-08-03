@@ -8,6 +8,7 @@ def main():
             in different graphs as shown on the menu.
         """)
     parse.menu()
+    #parse.visualize_days()
 
 if __name__=="__main__":
     main()

@@ -14,7 +14,8 @@ def menu():
            MENU
            1.Display raw data from file
            2.Visualize data by the day of the week
-           3.exit program
+           3.Visualize data by the category of the crime in a bar graph
+           4.exit program
            """)
         option=input("Enter your choice: ")
         if option == '1':
@@ -22,6 +23,8 @@ def menu():
         elif option == '2':
             visualize_days()
         elif option == '3':
+            visualize_type()
+        elif option == '4':
             sys.exit()
         else:
             print('\n***Enter the appropriate number.***\n')
@@ -73,6 +76,30 @@ def visualize_days():
     plt.show(block=False)
     #save the plot
     #plt.savefig("Days.png")
+
+def visualize_type():
+    """Vizualize data by category in a bar graph"""
+    data_file = parse(MY_FILE, ",")[0]
+    #grabing incidents that happen by category
+    counter = Counter(item["Category"] for item in data_file)
+    #set labels which are based on the keys of our counter
+    labels=tuple(counter.keys())
+    #set where the labels hit the x-axis
+    xlocations=np.array(range(len(labels))) + 0.5
+    #width of each bar
+    width=0.5
+    #Assign data to a bar plot
+    plt.bar(xlocations, counter.values(), width=width)
+    #Assign labels and tick location to x-axis
+    #width/2, place bar at the center of the tick
+    plt.xticks(xlocations + width/2, labels, rotation=90)
+    #Give some more room so the labels aren't cut off from the graph
+    plt.subplots_adjust(bottom=0.4)
+    #make an overall graph/figure larger
+    plt.rcParams['figure.figsize']=12, 8
+    #plt.savefig("Type.png")
+    plt.show(block=False)
+    #plt.clf()
 
 def displayData():
     """Prints out the raw data in the csv file"""
