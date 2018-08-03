@@ -1,10 +1,30 @@
 from collections import Counter
 import csv
 import json
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
 MY_FILE="data/sample_sfpd_incident_all.csv"
+
+def menu():
+    """Displays a menu which shows what can be done with the program"""
+    while True:
+        print("""
+           MENU
+           1.Display raw data from file
+           2.Visualize data by the day of the week
+           3.exit program
+           """)
+        option=input("Enter your choice: ")
+        if option == '1':
+            displayData()
+        elif option == '2':
+            visualize_days()
+        elif option == '3':
+            sys.exit()
+        else:
+            print('\n***Enter the appropriate number.***\n')
 
 def parse(raw_file, delimiter):
     """parse function which parses a csv file and returns a json-like object
@@ -14,7 +34,6 @@ def parse(raw_file, delimiter):
     opened_file  = open(raw_file)
     #read CSV file
     csv_data=csv.reader(opened_file, delimiter=delimiter)
-    #close CSV file
     #build a data structure to return parsed_data
     parsed_data=[]
     #skip over the first line of the file for the headers
@@ -50,11 +69,10 @@ def visualize_days():
     plt.plot(data_list)
     #create the amount of ticks needed for our x-axis, and assign the labels
     plt.xticks(range(len(data_tuple)), data_tuple)
+    #displays plot file
+    plt.show(block=False)
     #save the plot
-    plt.show()
     #plt.savefig("Days.png")
-    #close plot file
-    plt.clf
 
 def displayData():
     """Prints out the raw data in the csv file"""
