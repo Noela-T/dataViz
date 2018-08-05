@@ -2,8 +2,10 @@ from collections import Counter
 import csv
 import json
 import sys
+import webbrowser
 import matplotlib.pyplot as plt
 import numpy as np
+import geojson
 
 MY_FILE="data/sample_sfpd_incident_all.csv"
 
@@ -15,7 +17,9 @@ def menu():
            1.Display raw data from file
            2.Visualize data by the day of the week
            3.Visualize data by the category of the crime in a bar graph
-           4.exit program
+           4.Create a GeoJSON file to visualize the data on a map that can be
+           rendered on Github Gist at gist.github.com
+           5.exit program
            """)
         option=input("Enter your choice: ")
         if option == '1':
@@ -25,6 +29,33 @@ def menu():
         elif option == '3':
             visualize_type()
         elif option == '4':
+            create_map(parse(MY_FILE,",")[0])
+            print("""
+                Your GeoJSON file has been created.To view the map directly on
+                GitHub Gist, enter yes. If you prefer to create yout own Gist,
+                 enter no.\n""")
+            test=True
+            while test == True:
+                option2=input("Enter your choice: ")
+                if ('y' in option2):
+                    webbrowser.open("https://gist.github.com/Noela-T/fc95866ac4bca770677f4fe342985ac4#file-data-geojson")
+                    test = False
+                elif ('n' in option2):
+                    print("""
+                        To create your own Gist;
+                        1.Navigate to gist.github.com.
+                        2.Then copy the text in the newly-created geojson file,
+                         and paste into the Gist.
+                        3.Make sure to name your gist file with the .geojson
+                        ending
+                        4.Then select either “Create Private Gist” or
+                        “Create Public Gist”, your choice
+                        ....And Voila!!...""")
+                    test=False
+                else:
+                    print("Please enter an appropriate answer.")
+                    test=True
+        elif option == '5':
             sys.exit()
         else:
             print('\n***Enter the appropriate number.***\n')
@@ -88,7 +119,7 @@ def visualize_type():
     xlocations=np.array(range(len(labels))) + 0.5
     #width of each bar
     width=0.5
-    #Assign data to a bar plot
+    #Assign data to a bar plot, with the counter values being the heights of the bars
     plt.bar(xlocations, counter.values(), width=width)
     #Assign labels and tick location to x-axis
     #width/2, place bar at the center of the tick
@@ -97,7 +128,7 @@ def visualize_type():
     plt.subplots_adjust(bottom=0.4)
     #make an overall graph/figure larger
     plt.rcParams['figure.figsize']=12, 8
-    #plt.savefig("Type.png")
+    plt.savefig("Type.png")
     plt.show(block=False)
     #plt.clf()
 
@@ -110,3 +141,41 @@ def displayData():
             print (field + ":", end="")
             print(row[field]+".", end=" ")
         print("\n")
+
+def create_map(data_file):
+    """Creates a GeoJSON file.
+    Returns a GeoJSON file that can be rendered in a GitHub Gist at gist.github.com.
+    Just copy the output file and paste into a new Gist, then create either a
+    public or private gist. Github will automatically render the GeoJSON file as a map.
+    """
+    #define type of GeoJSON we're creating
+    geo_map={"type":"FeatureCollection"}
+    #define empty list to collect each point to graph
+    item_list=[]
+    #iterate over data to create GeoJSON document
+    #enumerate(), so we get the line, as well as the line number(index)
+    for index, line in enumerate(data_file):
+        #skip any zero coordinates as this will throw off the map
+        if line['X']=="0" or line['Y']=="0":
+            continue
+        #setup a new dictionary for each iteration
+        data={}
+        #assign line items to appropriate GeoJSON fields
+        data['type']='Feature'
+        data['id']=index
+        data['geometry']={'type':'Point',
+                          'coordinates':(line['X'],line['Y'])}
+        data['properties']={'title':line['Category'],
+                            'description':line['Descript'],
+                            'date':line['Date']}
+        #adding data dictionary to item_list
+        item_list.append(data)
+    #for each item on our item_list, we add it to our geomap dictionary
+    #setdefault creates a key called 'features' that has a value type of an empty listt
+    #with each iteration, we are appending the item to item_list
+    for item in item_list:
+        geo_map.setdefault('features', []).append(item)
+    #save the parsed GeoJson data to a file so it can be uploaded to
+    #gist.github.com
+    with open('file_sf.geojson','w')as f:
+        f.write(geojson.dumps(geo_map))
