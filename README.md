@@ -1,7 +1,7 @@
 ﻿# dataViz
 A python console application that parses sample data from a public crime filings excel file(csv), from rows and columns to a list of dictionaries, then render that data in two different graphs with matplotlib and then as a map in GitHub using geoJSON.
 
-# REQUIREMENTS
+## REQUIREMENTS
 
 ```
 - python3
@@ -10,7 +10,7 @@ A python console application that parses sample data from a public crime filings
 - install geojson
 ```
 
-# WHAT WORKS
+## WHAT WORKS
 
 - Menu containing what the application can do.
 - Parsing data from the csv file to get a list of dictionaries.
